@@ -13,7 +13,7 @@
 #include <signal.h>
 
 
-#define BLOCK_BUF_SIZE 5000
+#define BLOCK_BUF_SIZE 1024
 #define LINE_BUF_SIZE 500
 #define MAX_REQUEST_BODY_LENGTH 50000
 #define TIME_BUF_SIZE 64
