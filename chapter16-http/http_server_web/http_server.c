@@ -63,9 +63,13 @@ typedef void (*sighandler_t)(int);
 static void log_exit(char * fmt, ...);
 static void log_info(char * fmt, ...); 
 static void* xmalloc(size_t sz);
+
 static void install_signal_handlers(void);
 static void trap_signal(int sig, sighandler_t handler);
 static void signal_exit(int sig);
+static void detach_children(void);
+static void noop_handler(int sig);
+
 static void service(FILE *in, FILE *out, char *docroot);
 static struct HTTPRequest* read_request(FILE *in);
 static void read_request_line(struct HTTPRequest *req, FILE *in);
@@ -241,6 +245,7 @@ static void* xmalloc(size_t sz) {
 
 static void install_signal_handlers(void) {
     trap_signal(SIGPIPE, signal_exit);
+    detach_children();
 }
 
 static void trap_signal(int sig, sighandler_t handler) {
@@ -254,6 +259,21 @@ static void trap_signal(int sig, sighandler_t handler) {
 
 static void signal_exit(int sig) {
     log_exit("exit by signal %d", sig);
+}
+
+static void detach_children(void) {
+    struct sigaction act;
+
+    act.sa_handler = noop_handler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_RESTART | SA_NOCLDWAIT;
+    if (sigaction(SIGCHLD, &act, NULL) < 0) {
+        log_exit("sigaction() failed: %s", strerror(errno));
+    }
+}
+
+static void noop_handler(int sig) {
+    ;
 }
 
 static void free_request(struct HTTPRequest *req) {
