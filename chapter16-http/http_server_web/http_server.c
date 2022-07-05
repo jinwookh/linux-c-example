@@ -61,6 +61,7 @@ struct FileInfo {
 
 typedef void (*sighandler_t)(int);
 static void log_exit(char * fmt, ...);
+static void log_info(char * fmt, ...); 
 static void* xmalloc(size_t sz);
 static void install_signal_handlers(void);
 static void trap_signal(int sig, sighandler_t handler);
@@ -121,8 +122,6 @@ int main(int argc, char *argv[]) {
 
     if (optind == argc) {
 	docroot = ".";
-    } else {
-    	docroot = argv[optind];
     }
 
     install_signal_handlers();
@@ -183,18 +182,22 @@ static void server_main(int server_fd, char *docroot) {
 	pid = fork();
 	if (pid < 0) exit(3);
 	if (pid == 0) {
+	    
 	    FILE *inf = fdopen(sock, "r");
 	    FILE *outf = fdopen(sock, "w");
 
 	    service(inf, outf, docroot);
+	    log_info("wrote response done!");
 	    exit(0);
 	}
+	int status;	
 
+	waitpid(pid, &status, 0);
+	log_info("closing socket...");
 	close(sock);
+	log_info("closing socket done!");
     }
 }
-
-
 
 
 static void service(FILE *in, FILE *out, char *docroot) {
@@ -219,6 +222,14 @@ static void log_exit(char * fmt, ...) {
     exit(1);
 }
 
+static void log_info(char * fmt, ...) {
+    va_list ap;
+
+    vfprintf(stderr, fmt, ap);
+    fputc('\n', stderr);
+    
+    va_end(ap);
+}
 
 static void* xmalloc(size_t sz) {
     void *p;
