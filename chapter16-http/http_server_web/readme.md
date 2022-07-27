@@ -22,6 +22,15 @@ Default port is 80.
 curl localhost:80
 ```
 
+# example response
+```
+HTTP/1.1 404 Not Found
+Date: Wed, 27 Jul 2022 02:43:51 GMT
+Server: hello/1
+Connection: close
+Content-Type: text/html
+```
+
 
 # TODO
 - process is created every request and becomes zombie as it ends. Zombie process needs to be deleted as child process ends.    
