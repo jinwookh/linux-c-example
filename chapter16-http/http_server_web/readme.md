@@ -24,8 +24,18 @@ curl localhost:80
 
 
 # TODO
-- process is created every request and becomes zombie as it ends. Zombie process needs to be deleted as child process ends.
+- process is created every request and becomes zombie as it ends. Zombie process needs to be deleted as child process ends.    
+-> problem solved.
+set `SA_NOCLDWAIT` flag so the parent does not wait for the child process.
+If child process ends, it just ends.
 
 - Connection between client and server is keep being established. Keeping connection alive may have some benefit, however this is not intended, and don't know why connection is being alive.
+-> problem solved.
+connection is not being alive. connection ends when client recieves the response.
 
 - child process takes over parent process, and listens port and establishes connection with client. There should be only one process who listens to the port.
+-> problem solved,
+child process does not take over the parent process. It just ends after working iwth single request is done.
+
+
+
