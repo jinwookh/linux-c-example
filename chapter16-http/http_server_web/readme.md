@@ -48,10 +48,10 @@ child process does not take over the parent process. It just ends after working 
 
 
 # Bonus
-use `http_request.c` to request http.
+use `http_client.c` to request http.
 ```
-gcc -o http_request http_request.c
-./http_request
+gcc -o http_client http_client.c
+./http_client
 ```
 
 The value of request is coded inside.
