@@ -184,11 +184,13 @@ static void server_main(int server_fd, char *docroot) {
 	sock = accept(server_fd, (struct sockaddr*)&addr, &addrlen);
 	if (sock <0) log_exit("accept(2) failed: %s", strerror(errno));
 	pid = fork();
+	log_info("fork completed!");
 	if (pid < 0) exit(3);
 	if (pid == 0) {
 	    
 	    FILE *inf = fdopen(sock, "r");
 	    FILE *outf = fdopen(sock, "w");
+
 
 	    service(inf, outf, docroot);
 	    log_info("wrote response done!");
@@ -207,7 +209,9 @@ static void server_main(int server_fd, char *docroot) {
 static void service(FILE *in, FILE *out, char *docroot) {
     struct HTTPRequest *req;
     req = read_request(in);
+    log_info("I just have read request!");
     respond_to(req, out, docroot);
+    log_info("I just have wrote response!");
     free_request(req);
 }
 
@@ -215,13 +219,8 @@ static void log_exit(char * fmt, ...) {
     va_list ap;
 
     va_start(ap, fmt);
-    if (debug_mode) {
-    	vfprintf(stderr, fmt, ap);
-    	fputc('\n', stderr);
-    }
-    else {
-    	vsyslog(LOG_ERR, fmt, ap);
-    }
+    vfprintf(stderr, fmt, ap);
+    fputc('\n', stderr);
     va_end(ap);
     exit(1);
 }
@@ -320,6 +319,7 @@ static void read_request_line(struct HTTPRequest *req, FILE *in) {
     char buf[LINE_BUF_SIZE];
     char *path, *p;
 
+    log_info("I am trying to read request line...");
     if (!fgets(buf, LINE_BUF_SIZE, in))
         log_exit("no request line");
     p = strchr(buf, ' ');

@@ -47,4 +47,11 @@ connection is not being alive. connection ends when client recieves the response
 child process does not take over the parent process. It just ends after working iwth single request is done.
 
 
+# Bonus
+use `http_request.c` to request http.
+```
+gcc -o http_request http_request.c
+./http_request
+```
 
+The value of request is coded inside.
