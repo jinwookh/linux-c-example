@@ -9,7 +9,7 @@
 #include <string.h>
 #include <err.h>
 
-#define NLOOP_FOR_ESTIMATION 100000000UL
+#define NLOOP_FOR_ESTIMATION 1000000000UL
 #define NSECS_PER_MSEC 1000000UL
 #define NSECS_PER_SEC 1000000000UL
 
@@ -43,10 +43,9 @@ static void child_fn(int id, struct timespec *buf, int nrecord, unsigned long nl
 		load(nloop_per_resol);
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 		buf[i] = ts;
-	}
-	for (i = 0; i < nrecord; i++) {
 		printf("%d\t%ld\t%d\n", id, diff_nsec(start, buf[i]) / NSECS_PER_MSEC, (i+1) * 100 / nrecord);
 	}
+	
 	exit(EXIT_SUCCESS);
 }
 
