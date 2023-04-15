@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define DEFAULT_PORT "5555"
+#define DEFAULT_PORT "3456"
 
 static int open_connection(char *host, char *service);
 
@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
 
     for (;;) {
 	fgets(buf, sizeof buf, stdin);
+	printf("buffer contents: %s", buf);
 
 	int bytes = write(sock, buf, sizeof buf);
 	char bytesToStr[40];
@@ -51,7 +52,7 @@ static int open_connection(char *host, char *service) {
     int err;
 
     memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     if ((err = getaddrinfo(host, service, &hints, &res)) != 0) {
         fprintf(stderr, "getaddrinfo(3): %s\n", gai_strerror(err));
@@ -60,6 +61,22 @@ static int open_connection(char *host, char *service) {
     
     for (ai = res; ai; ai = ai -> ai_next) {
         sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+	printf("ai family is..");
+	switch (ai->ai_family) {
+	case AF_INET:
+		printf("inet");
+		break;
+	case AF_INET6:
+		printf("inet6");
+		break;
+	case AF_UNSPEC:
+		printf("unspecified");
+		break;
+	default:
+		printf("unknown");
+	}
+	printf("\n");
+	fflush(stdout);
 	if (sock < 0) {
 	    continue;
 	}
